@@ -1,4 +1,6 @@
 const express = require('express');
+const session = require('express-session')
+const flash = require('connect-flash')
 const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
@@ -7,7 +9,12 @@ const methodOverride = require('method-override');
 const ExpressError = require('./utlis/ExpressError');
 
 
+const campgrounds = require('./routes/campgrounds');
+const reviews = require('./routes/reviews');
+
+
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
+
 //await mongoose.connect('mongodb://localhost:27017/yelp-camp')
 
 const db= mongoose.connection;
@@ -22,68 +29,34 @@ app.set('views', path.join(__dirname,'views'))
 
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method'))
+app.use(express.static(path.join(__dirname,'public')))
 
-const validateCampground = (req,res,next) =>{
-    
-        const {error} = campgroundSchema.validate(req.body);
-        if(error)
-        {
-            const msg = error.details.map(el => el.message).join(',')
-            throw new ExpressError(msg,400)
-        }
-        else{
-            next();
-        }
-        //console.log(result);
-
+const sessionConfig={
+    secret: 'thisshouldbeasecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 *60 *24 * 7,
+        maxAge: 1000 * 60 *60 *24 * 7
+    }
 }
+app.use(session(sessionConfig));
+app.use(flash())
+
+app.use((req,res,next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+app.use('/campgrounds',campgrounds)
+app.use('/campgrounds/:id/reviews',reviews)
 
 app.get('/', (req,res) => {
     res.render('home')
    // res.send('Hello from yelpCamp!!!!')
 })
-
-app.get('/campgrounds', async(req,res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index',{campgrounds});
-})
-
-app.get('/campgrounds/new', (req,res) => {
-    res.render('campgrounds/new')
-})
-
-app.post('/campgrounds', validateCampground, CatchAsync(async(req,res,next) => {
-    //if(!req.body.campground)throw new ExpressError('Invalid Data',404);
-    
-        const campground = new Campground(req.body.campground);
-        await campground.save();
-        //res.redirect('/campgrounds')
-        res.redirect(`/campgrounds/${campground._id}`)
-    
-}))
-
-app.get('/campgrounds/:id', CatchAsync(async(req,res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render('campgrounds/show', {campground});
-}))
-
-app.get('/campgrounds/:id/edit', CatchAsync(async(req,res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render('campgrounds/edit', {campground})
-}))
-
-app.put('/campgrounds/:id',validateCampground, CatchAsync(async(req,res) => {
-    const {id} = req.params;
-    const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground})
-    res.redirect(`/campgrounds/${campground._id}`)
-   // res.send("It Worked");
-}))
-
-app.delete('/campgrounds/:id', CatchAsync(async(req,res) => {
-    const {id} = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.redirect('/campgrounds')
-}))
 
 //This will only run when nothing of them match and response back
 app.all('*',(req,res,next) => {
