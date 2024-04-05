@@ -3,11 +3,7 @@ const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-//const Joi = require('joi');
-const { campgroundSchema } = require('./schemas.js');
 const methodOverride = require('method-override');
-const Campground = require('./models/campground');
-const CatchAsync = require('./utlis/catchAsync');
 const ExpressError = require('./utlis/ExpressError');
 
 
