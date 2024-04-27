@@ -5,36 +5,28 @@ const CatchAsync = require('../utlis/catchAsync.js');
 const ExpressError = require('../utlis/ExpressError.js');
 
 const Campground = require('../models/campground.js');
-const { reviewSchema } = require('../schemas.js');
+const {validateReview, isLoggedIn,isReviewAuthor} = require('../middleware.js');
+//const { reviewSchema } = require('../schemas.js');
 const Review = require('../models/review.js');
 
-const validateReview = (req,res,next) =>{
-    const {error} = reviewSchema.validate(req.body);
-   console.log(error);
-    if(error)
-    {   //console.log(error)
-        const msg = error.details.map(m => m.message).join(',')
-        throw new ExpressError(msg,400)
-    }
-    else{
-        next();
-    }
-}
 
-router.post('/', validateReview, CatchAsync(async(req,res) => {
+
+router.post('/',isLoggedIn, validateReview, CatchAsync(async(req,res) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     campground.reviews.push(review);
     await review.save();
     await campground.save();
-    req.flash('success','created new ReView!!!!1')
+    req.flash('success','Created new Review!!!!')
     res.redirect(`/campgrounds/${campground._id}`)
    // res.send('You Made It')
 }))
 
 //delete reviews with the help of Id of campground
-router.delete('/:reviewId', CatchAsync(async(req,res) =>{
-    console.log("deleteeee");
+// /campground/id/reviews/reviewId
+router.delete('/:reviewId',isLoggedIn, isReviewAuthor, CatchAsync(async(req,res) =>{
+    //console.log("deleteeee");
    const {id,reviewId} = req.params;
     await Campground.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
     await Review.findByIdAndDelete(reviewId);
