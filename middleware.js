@@ -15,7 +15,7 @@ module.exports.isLoggedIn = (req,res,next) => {
     next();
 }
 module.exports.validateCampground = (req,res,next) =>{
-    
+
     const {error} = campgroundSchema.validate(req.body);
     if(error)
     {
@@ -58,7 +58,9 @@ module.exports.storeReturnTo = (req, res, next) => {
 }
 
 module.exports.validateReview = (req,res,next) =>{
+   
     const {error} = reviewSchema.validate(req.body);
+
    console.log(error);
     if(error)
     {   //console.log(error)
@@ -68,4 +70,5 @@ module.exports.validateReview = (req,res,next) =>{
     else{
         next();
     }
+    
 }

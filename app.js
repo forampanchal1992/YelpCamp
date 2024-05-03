@@ -1,3 +1,11 @@
+//this line will always run development environment by defaults
+if(process.env.NODE_ENV !== "production"){
+    require('dotenv').config();
+}
+
+console.log(process.env.SECRET)
+console.log(process.env.API_KEY)
+
 const express = require('express');
 const session = require('express-session')
 const flash = require('connect-flash')
