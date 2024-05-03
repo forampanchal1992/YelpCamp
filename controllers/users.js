@@ -30,7 +30,7 @@ module.exports.renderLogin = (req,res) => {
 module.exports.login = (req,res) => {
     // passport.authenticate logs the user in and clears req.session    
     req.flash('success','Welcome Back');
-    const redirectUrl = req.session.returnTo || '/campgrounds';
+    const redirectUrl = res.locals.returnTo || '/campgrounds';
     delete req.session.returnTo;
     res.redirect(redirectUrl); 
 }
