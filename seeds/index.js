@@ -28,10 +28,18 @@ const seedDB = async() => {
             image: 'https://source.unsplash.com/random/?camping',
             description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis quis culpa, possimus quidem, mollitia aliquid odio ab sit numquam blanditiis, dignissimos iusto placeat repellat? Nisi, maxime praesentium? Voluptate, iusto neque.",
             price,
-            images:  [
+            images:   [
                 {
-                  url: 'https://res.cloudinary.com/dgyxm0wqs/image/upload/v1715366858/YelpCamp/g1cv1qinfcbifvcbvtzo.jpg',
-                  filename: 'YelpCamp/g1cv1qinfcbifvcbvtzo'
+                  url: 'https://res.cloudinary.com/dgyxm0wqs/image/upload/v1715362270/YelpCamp/ksk1hvwbc1apsltve2tc.jpg',
+                  filename: 'YelpCamp/ksk1hvwbc1apsltve2tc'
+                },
+                {
+                  url: 'https://res.cloudinary.com/dgyxm0wqs/image/upload/v1715362270/YelpCamp/lzfie7hntibmqgz6xj4l.jpg',
+                  filename: 'YelpCamp/lzfie7hntibmqgz6xj4l'
+                },
+                {
+                  url: 'https://res.cloudinary.com/dgyxm0wqs/image/upload/v1715362270/YelpCamp/fyf3glhqwkifwh87xvid.jpg',
+                  filename: 'YelpCamp/fyf3glhqwkifwh87xvid'
                 }
               ]
         })
