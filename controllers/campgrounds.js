@@ -1,5 +1,6 @@
 //All the logic goes in the controller File.
 const Campground = require('../models/campground.js');
+const {cloudinary} = require('../cloudinary');
 
 module.exports.index = async(req,res) => {
     const campgrounds = await Campground.find({});
@@ -17,8 +18,6 @@ module.exports.createCampground = async(req,res,next) => {
         await campground.save();
         console.log(campground);
         req.flash('success','Successfully made a new campground!!!');
-
-        //res.redirect('/campgrounds')
         res.redirect(`/campgrounds/${campground._id}`)
     
 }
@@ -55,6 +54,13 @@ module.exports.updateCampground = async(req,res) => {
    const imgs = req.files.map(f => ({url: f.path,filename: f.filename}))
    campground.images.push(...imgs); 
     await campground.save();
+    if(req.body.deleteImages){
+        for(let filename of req.body.deleteImages){
+            await cloudinary.uploader.destroy(filename);
+        }
+        await campground.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}})
+        console.log(campground);
+    }
     req.flash('success','Successfully updated campground');
     res.redirect(`/campgrounds/${campground._id}`)
    // res.send("It Worked");
